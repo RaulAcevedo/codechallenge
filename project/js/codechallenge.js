@@ -140,6 +140,9 @@ var renderPictures = function(arrayXML)
 		}
 		flickrManager.goToPage(0);
 
+	}else
+	{
+		$("#mainContent").html("<p>No images loaded!, Search for new images using the search field. </p>");
 	}
 }
 
@@ -150,6 +153,7 @@ $("document").ready(function(){
 			   if(e.which == ENTER_KEY)
 			    flickrManager.searchInFlickr($(this).val(),renderPictures)
 			});
+	$("#mainContent").html("<p>No images loaded!, Search for new images using the search field. </p>");
 	$("#loadinganim").css("display","none");
 	$("#overlayer").click(function(){
 		$(this).removeClass("overclick");

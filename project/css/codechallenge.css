@@ -113,3 +113,7 @@ ul li {
 	background: rgba(0,0,0,.9) !important;
 
 }
+
+#mainContent >p{
+    margin-top: 35px; 
+}
