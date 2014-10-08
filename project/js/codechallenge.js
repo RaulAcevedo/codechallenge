@@ -10,11 +10,21 @@ var settings = {
 
 
 var flickrManager = function(){
+	
+	var pageArray,searchCallBack,index;
 
-	var searchCallBack;
 	var onSuccess = function(data,status,httpObject){
-		debugger;
-		searchCallBack();
+		var responseXML = data;
+
+		if(status == "success")
+		{
+			if(responseXML.children.length >0){
+				if(responseXML.children[0].children.length >0)
+				{
+					searchCallBack(responseXML.children[0].children[0].children);
+				}
+			}
+		}
 	}
 
 	var onFail = function(){
@@ -29,15 +39,64 @@ var flickrManager = function(){
 				  url: settings.flickerURL,
 				  data: {api_key:settings.apiKey,text:searchTerm,method:settings.searchMethod},
 				  success: onSuccess,
-				  error:onFail
+				  error:onFail,
+				  dataType:"xml"
 				});
+		},
+		setPages:function(arrayp){
+			pageArray = arrayp;
+		},
+		getPages:function(){
+			return pageArray;
+		},
+		goToPage:function(pageIndex){
+			var pageContent = "";
+			index = pageIndex;
+			if(index >=0 && index< pageArray.length){
+
+				$("#mainContent").html("");
+				pageContent =  pageArray[pageIndex];
+				$("#mainContent").html(pageContent);
+			}
+
+
 		}
+
 	};
 }();
 
-var renderPictures = function()
+var renderPictures = function(arrayXML)
 {
-	alert ("success");
+	var contentString = "";
+	var elementNode;
+	
+	for (var i=0;i< arrayXML.length;i++)
+	{
+		
+		elementNode = arrayXML[i];
+		contentString += "<div><img src='https://farm"+elementNode.getAttribute("farm")
+										+".staticflickr.com/"+elementNode.getAttribute("server")+"/"
+										+elementNode.getAttribute("id")+"_"
+										+elementNode.getAttribute("secret")+".jpg"
+										+"'></img><p>"+elementNode.getAttribute("title")+"</p></div>";
+
+		if(i > 0 && (i%12) == 0)
+		{
+			contentString += "|page|";
+		}								
+	}
+	flickrManager.setPages(contentString.split("|page|"));
+
+	contentString = "";
+	for(i = 0;i< flickrManager.getPages().length; i++)
+	{
+		contentString += "<a class='navLink' />"
+	}
+
+	if(flickrManager.getPages().length >0)
+		flickrManager.goToPage(0);
+	
+
 }
 
 // Start Point
