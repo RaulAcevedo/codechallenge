@@ -15,7 +15,7 @@ var flickrManager = function(){
 
 	var onSuccess = function(data,status,httpObject){
 		var responseXML = data;
-
+		$("#loadinganim").css("display","none");
 		if(status == "success")
 		{
 			if(responseXML.children.length >0){
@@ -28,11 +28,13 @@ var flickrManager = function(){
 	}
 
 	var onFail = function(){
-		alert ("Error");
+		$("#loadinganim").css("display","none");
+		alert ("There was something wrong with your search , Please try again!");
 	}
 
 	return{
 		searchInFlickr:function(searchTerm,callback){
+			$("#loadinganim").css("display","flex");
 			searchCallBack = callback;
 			$.ajax({
 				  type: "POST",
@@ -57,9 +59,28 @@ var flickrManager = function(){
 				$("#mainContent").html("");
 				pageContent =  pageArray[pageIndex];
 				$("#mainContent").html(pageContent);
+
+				$(".navLink").each(function( pIndex ) {
+				   if($(this).attr("index") == index)
+				   {
+				   	  $(this).addClass("selectedPage");
+				   }else
+				   {
+				   	 $(this).removeClass("selectedPage");
+				   }
+				});
+
+				$(".imagecontainer").click(function(){
+					$("#viewImage").attr("src","");
+					$("#overlayer").addClass("overclick");
+					$("#viewImage").attr("src",$(this).attr("showURL"));
+				});
 			}
 
 
+		},
+		getPageIndex:function(){
+			return index;
 		}
 
 	};
@@ -69,34 +90,57 @@ var renderPictures = function(arrayXML)
 {
 	var contentString = "";
 	var elementNode;
-	
 	for (var i=0;i< arrayXML.length;i++)
 	{
 		
 		elementNode = arrayXML[i];
-		contentString += "<div><img src='https://farm"+elementNode.getAttribute("farm")
-										+".staticflickr.com/"+elementNode.getAttribute("server")+"/"
-										+elementNode.getAttribute("id")+"_"
-										+elementNode.getAttribute("secret")+".jpg"
-										+"'></img><p>"+elementNode.getAttribute("title")+"</p></div>";
 
 		if(i > 0 && (i%12) == 0)
 		{
 			contentString += "|page|";
-		}								
+		}
+
+		contentString += "<div class='imagecontainer shadowed' showURL='https://farm"+elementNode.getAttribute("farm")
+										+".staticflickr.com/"+elementNode.getAttribute("server")+"/"
+										+elementNode.getAttribute("id")+"_"
+										+elementNode.getAttribute("secret")+".jpg"
+										+"'>"
+							+"<div><img src='https://farm"+elementNode.getAttribute("farm")
+										+".staticflickr.com/"+elementNode.getAttribute("server")+"/"
+										+elementNode.getAttribute("id")+"_"
+										+elementNode.getAttribute("secret")+"_t.jpg"
+										+"'></img><p class='caption'>"+elementNode.getAttribute("title")+"</p></div></div>";
+								
 	}
 	flickrManager.setPages(contentString.split("|page|"));
 
 	contentString = "";
-	for(i = 0;i< flickrManager.getPages().length; i++)
-	{
-		contentString += "<a class='navLink' />"
-	}
+	
+	$("#pagerNav").empty();
+	$("#mainContent").empty();
 
 	if(flickrManager.getPages().length >0)
+	{
+		if(flickrManager.getPages()[0].length >0)
+		{
+			for(i = 0;i< flickrManager.getPages().length; i++)
+			{
+				contentString += "<a class='navLink shadowed' index='"+i+"' >"+(i+1)+"</a>"
+			}
+			$("#pagerNav").html(contentString);
+			
+			$(".navLink").click(function(){
+					var index = $(this).attr("index");
+					
+					if(index != flickrManager.getPageIndex())
+					{
+						flickrManager.goToPage(index);
+					}
+			});
+		}
 		flickrManager.goToPage(0);
-	
 
+	}
 }
 
 // Start Point
@@ -106,5 +150,9 @@ $("document").ready(function(){
 			   if(e.which == ENTER_KEY)
 			    flickrManager.searchInFlickr($(this).val(),renderPictures)
 			});
+	$("#loadinganim").css("display","none");
+	$("#overlayer").click(function(){
+		$(this).removeClass("overclick");
+	});	
 
 });

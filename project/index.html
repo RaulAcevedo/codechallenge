@@ -11,11 +11,25 @@
 	</head>
 	<body>
 		<header>
-			<nav>
-				<ul>
-				</ul>
-				<label for="searchField">SEARCH </label>
-				<input type="search" autocomplete="on" id="searchField" />
+			<section class="header">
+				<article class="headContent" >
+					My Pictures !
+				</article>
+				
+			</section>
+			<nav class="shadowed">
+				<section>
+					<ul>
+						<li>CATEGORY</li>
+						<li>Web</li>
+						<li>Print</li>
+						<li>App</li>
+					</ul>
+					<div id ="loadinganim"><img  src="img/ajax-loader.gif"></img></div>
+					<label for="searchField">SEARCH </label>
+					<input type="search" autocomplete="on" id="searchField" />
+				</section>
+				
 			</nav>
 		</header>
 		
@@ -23,6 +37,9 @@
 		</section>
 		<section id="pagerNav">
 		</section>
+		<div id="overlayer">
+			<div><img id="viewImage"></img></div>
+		</div>
 		<footer>
 		</footer>
 		
